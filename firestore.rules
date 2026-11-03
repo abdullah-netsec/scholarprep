@@ -1,0 +1,64 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    function isAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+
+    function isOwnerByEmailKey(docId) {
+      return request.auth != null && request.auth.token.email != null;
+    }
+    
+    // User Profiles: Only the authenticated user can read/write their own document
+    match /users/{userId} {
+      allow read: if (request.auth != null && (request.auth.uid == userId || resource.data.uid == request.auth.uid)) || isAdmin();
+      allow create, update: if request.auth != null && (request.auth.uid == userId || request.resource.data.uid == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
+    // User Stats: Only the authenticated user can read/write their own stats
+    match /user_stats/{statId} {
+      allow read, write: if isOwnerByEmailKey(statId) || isAdmin();
+    }
+
+    // Saved Work & Mistake Notebooks: Only the authenticated owner can read/write
+    match /saved_work/{workId} {
+      allow read, delete: if (request.auth != null && resource.data.userEmail == request.auth.token.email) || isAdmin();
+      allow create, update: if request.auth != null && request.resource.data.userEmail == request.auth.token.email;
+    }
+
+    match /mistakes/{mistakeId} {
+      allow read, delete: if (request.auth != null && resource.data.userEmail == request.auth.token.email) || isAdmin();
+      allow create, update: if request.auth != null && request.resource.data.userEmail == request.auth.token.email;
+    }
+
+    match /pdf_annotations_v2/{annId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Quiz Results: Only the user can read/write their own results
+    match /quiz_results/{resultId} {
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if (request.auth != null && resource.data.userId == request.auth.uid) || isAdmin();
+    }
+
+    // Questions Database: Anyone can read, no one can write from client
+    match /questions/{questionId} {
+      allow read: if true;
+      allow write: if false; 
+    }
+
+    // System Settings: Anyone can read maintenance status, only custom-claim admin can write
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Default deny for everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

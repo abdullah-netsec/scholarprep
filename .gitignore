@@ -1,0 +1,55 @@
+# Dependencies & Build Output
+node_modules/
+dist/
+.firebase/
+
+# Environment & Secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Private Question Banks (Full 1,650+ Question & Leaks Banks stay local only)
+# Public repo includes *.sample.js demo banks instead
+src/data/quantQuestions.js
+src/data/verbalQuestions.js
+src/data/nov2Leaks.js
+src/data/scholarVault1.js
+src/data/scholarVault2.js
+
+# Raw Exam Folders, Screenshots & Scratch Scripts (Keep Private / Out of Git)
+Quantative/
+nov 2 questions/
+graph and chart questions/
+Secret_Verbal_7_Qwen_JSON/
+scratch/
+*.pdf
+*.csv
+*.zip
+*.txt
+*.py
+/*.cjs
+/*.mjs
+/*.js
+!vite.config.js
+/*.json
+!package.json
+!package-lock.json
+!firebase.json
+/*.html
+!/index.html
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+firebase-debug.log*
+firebase-debug.*.log*
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
